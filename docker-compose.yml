@@ -1,0 +1,49 @@
+version: "3.7"
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: blogger_server
+    restart: always
+    ports:
+      - 3001:3001
+    networks:
+      - blogger
+    volumes:
+      - ./server:/app
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7.22
+    container_name: blogger_db
+    environment:
+      MYSQL_DATABASE: "blogger"
+      MYSQL_USER: "username"
+      MYSQL_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - ./database:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    networks:
+      - blogger
+    restart: unless-stopped
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    container_name: blogger_phpmyadmin
+    environment:
+      PMA_HOST: db
+    ports:
+      - 8090:80
+    restart: always
+    networks:
+      - blogger
+networks:
+  blogger:
+    driver: bridge

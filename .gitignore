@@ -1,0 +1,4 @@
+/database
+/server/node_modules
+/request
+/server/prisma/migrations
